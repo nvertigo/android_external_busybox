@@ -46,7 +46,6 @@
 /bin/du
 /bin/echo
 /bin/ed
-/bin/egrep
 /bin/env
 /bin/expand
 /bin/expr
@@ -54,7 +53,6 @@
 /sbin/fbsplash
 /sbin/fdisk
 /bin/fgconsole
-/bin/fgrep
 /bin/find
 /bin/findfs
 /sbin/flash_lock
@@ -72,7 +70,6 @@
 /bin/getenforce
 /bin/getopt
 /bin/getsebool
-/bin/grep
 /bin/groups
 /bin/gunzip
 /bin/gzip
@@ -125,7 +122,6 @@
 /sbin/nanddump
 /sbin/nandwrite
 /sbin/nbd-client
-/bin/nc
 /bin/netstat
 /bin/nice
 /bin/nmeter
@@ -220,7 +216,6 @@
 /bin/unlzma
 /bin/unlzop
 /bin/unxz
-/bin/unzip
 /bin/uptime
 /bin/usleep
 /bin/uudecode
