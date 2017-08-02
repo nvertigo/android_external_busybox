@@ -2,6 +2,7 @@
 /bin/[[
 /sbin/adjtimex
 /bin/ash
+/sbin/arp
 /bin/awk
 /bin/bbconfig
 /bin/bunzip2
@@ -29,6 +30,7 @@
 /bin/getsebool
 /sbin/halt
 /bin/hexdump
+/sbin/ifconfig
 /sbin/inetd
 /bin/iostat
 /sbin/killall5
@@ -46,15 +48,18 @@
 /bin/mpstat
 /sbin/nanddump
 /sbin/nandwrite
+/bin/netstat
 /bin/nmeter
 /bin/nslookup
 /sbin/ntpd
 /bin/openvt
+/bin/ping
 /bin/pipe_progress
 /sbin/poweroff
 /bin/pstree
 /bin/rdate
 /sbin/rdev
+/sbin/route
 /bin/run-parts
 /bin/rx
 /sbin/selinuxenabled
@@ -72,6 +77,7 @@
 /bin/tftp
 /sbin/tftpd
 /bin/top
+/bin/traceroute
 /bin/ttysize
 /bin/uncompress
 /bin/unexpand
