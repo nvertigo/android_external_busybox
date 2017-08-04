@@ -1,0 +1,6 @@
+/sbin/arp
+/sbin/ifconfig
+/bin/netstat
+/bin/ping
+/sbin/route
+/bin/traceroute

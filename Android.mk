@@ -153,7 +153,7 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
 LOCAL_SHARED_LIBRARIES := libc libcutils libm
 LOCAL_STATIC_LIBRARIES := libclearsilverregex libuclibcrpc libselinux
-LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_full) busybox_links
+LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_full) busybox_links busybox_bin_links
 LOCAL_CLANG := false
 
 BUSYBOX_BINARY := $(LOCAL_MODULE)
@@ -176,6 +176,26 @@ BUSYBOX_SYMLINKS := $(filter-out $(BUSYBOX_EXCLUDE),$(notdir $(BUSYBOX_LINKS)))
 LOCAL_POST_INSTALL_CMD := \
     $(hide) mkdir -p $(TARGET_OUT_OPTIONAL_EXECUTABLES) && \
     $(foreach t,$(BUSYBOX_SYMLINKS),ln -sf $(BUSYBOX_BINARY) $(TARGET_OUT_OPTIONAL_EXECUTABLES)/$(t);)
+
+include $(BUILD_PHONY_PACKAGE)
+
+# Symlinks (additional links in /system/bin)
+
+LOCAL_PATH := $(BB_PATH)
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := busybox_bin_links
+LOCAL_MODULE_TAGS := optional
+
+# nc is provided by external/netcat
+BUSYBOX_EXCLUDE := nc
+
+BUSYBOX_BIN_LINKS := $(shell cat $(BB_PATH)/busybox-$(BUSYBOX_CONFIG)-bin.links)
+BUSYBOX_BIN_SYMLINKS := $(filter-out $(BUSYBOX_EXCLUDE),$(notdir $(BUSYBOX_BIN_LINKS)))
+
+LOCAL_POST_INSTALL_CMD := \
+    $(hide) mkdir -p $(TARGET_OUT_EXECUTABLES) && \
+    $(foreach u,$(BUSYBOX_BIN_SYMLINKS),ln -sf ../xbin/$(BUSYBOX_BINARY) $(TARGET_OUT_EXECUTABLES)/$(u);)
 
 include $(BUILD_PHONY_PACKAGE)
 
