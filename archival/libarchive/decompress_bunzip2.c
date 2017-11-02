@@ -134,7 +134,7 @@ static unsigned get_bits(bunzip_data *bd, int bits_wanted)
 
 		/* Avoid 32-bit overflow (dump bit buffer to top of output) */
 		if (bit_count >= 24) {
-			bits = bd->inbufBits & ((1 << bit_count) - 1);
+			bits = bd->inbufBits & ((1U << bit_count) - 1);
 			bits_wanted -= bit_count;
 			bits <<= bits_wanted;
 			bit_count = 0;
@@ -158,11 +158,11 @@ static int get_next_block(bunzip_data *bd)
 {
 	struct group_data *hufGroup;
 	int dbufCount, dbufSize, groupCount, *base, *limit, selector,
-		i, j, t, runPos, symCount, symTotal, nSelectors, byteCount[256];
-	int runCnt = 0;
+		i, j, runPos, symCount, symTotal, nSelectors, byteCount[256];
+	int runCnt = runCnt; /* for compiler */
 	uint8_t uc, symToByte[256], mtfSymbol[256], *selectors;
 	uint32_t *dbuf;
-	unsigned origPtr;
+	unsigned origPtr, t;
 
 	dbuf = bd->dbuf;
 	dbufSize = bd->dbufSize;
@@ -308,7 +308,7 @@ static int get_next_block(bunzip_data *bd)
 		base = hufGroup->base - 1;
 		limit = hufGroup->limit - 1;
 
-		/* Calculate permute[].  Concurently, initialize temp[] and limit[]. */
+		/* Calculate permute[].  Concurrently, initialize temp[] and limit[]. */
 		pp = 0;
 		for (i = minLen; i <= maxLen; i++) {
 			int k;
@@ -731,7 +731,7 @@ void FAST_FUNC dealloc_bunzip(bunzip_data *bd)
 
 /* Decompress src_fd to dst_fd.  Stops at end of bzip data, not end of file. */
 IF_DESKTOP(long long) int FAST_FUNC
-unpack_bz2_stream(transformer_aux_data_t *aux, int src_fd, int dst_fd)
+unpack_bz2_stream(transformer_state_t *xstate)
 {
 	IF_DESKTOP(long long total_written = 0;)
 	bunzip_data *bd;
@@ -739,14 +739,14 @@ unpack_bz2_stream(transformer_aux_data_t *aux, int src_fd, int dst_fd)
 	int i;
 	unsigned len;
 
-	if (check_signature16(aux, src_fd, BZIP2_MAGIC))
+	if (check_signature16(xstate, BZIP2_MAGIC))
 		return -1;
 
 	outbuf = xmalloc(IOBUF_SIZE);
 	len = 0;
 	while (1) { /* "Process one BZ... stream" loop */
 
-		i = start_bunzip(&bd, src_fd, outbuf + 2, len);
+		i = start_bunzip(&bd, xstate->src_fd, outbuf + 2, len);
 
 		if (i == 0) {
 			while (1) { /* "Produce some output bytes" loop */
@@ -756,8 +756,7 @@ unpack_bz2_stream(transformer_aux_data_t *aux, int src_fd, int dst_fd)
 				i = IOBUF_SIZE - i; /* number of bytes produced */
 				if (i == 0) /* EOF? */
 					break;
-				if (i != full_write(dst_fd, outbuf, i)) {
-					bb_error_msg("short write");
+				if (i != transformer_write(xstate, outbuf, i)) {
 					i = RETVAL_SHORT_WRITE;
 					goto release_mem;
 				}
@@ -790,7 +789,7 @@ unpack_bz2_stream(transformer_aux_data_t *aux, int src_fd, int dst_fd)
 		len = bd->inbufCount - bd->inbufPos;
 		memcpy(outbuf, &bd->inbuf[bd->inbufPos], len);
 		if (len < 2) {
-			if (safe_read(src_fd, outbuf + len, 2 - len) != (int)(2 - len))
+			if (safe_read(xstate->src_fd, outbuf + len, 2 - len) != 2 - len)
 				break;
 			len = 2;
 		}

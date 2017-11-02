@@ -8,7 +8,9 @@ BIONIC_ICS := false
 BIONIC_L := true
 
 BUSYBOX_WARNING_HIDE := -Wno-error=implicit-function-declaration -Wno-implicit-function-declaration -Wno-implicit-fallthrough \
-			-Wno-sign-compare -Wno-format-overflow -Wno-shift-negative-value -Wno-logical-not-parentheses -Wno-return-type
+			-Wno-sign-compare -Wno-format-overflow -Wno-shift-negative-value -Wno-logical-not-parentheses \
+			-Wno-pointer-arith -Wno-return-type -Wno-error=format-security -Wno-format-truncation -Wno-uninitialized \
+			-Wno-maybe-uninitialized -Wno-format-security -Wno-discarded-qualifiers -Wno-type-limits
 
 # Make a static library for regex.
 include $(CLEAR_VARS)
@@ -50,7 +52,7 @@ bb_gen := $(abspath $(TARGET_OUT_INTERMEDIATES)/busybox)
 
 busybox_prepare_full := $(bb_gen)/full/.config
 $(busybox_prepare_full): $(BB_PATH)/busybox-full.config
-	@echo -e ${CL_YLW}"Prepare config for busybox binary"${CL_RST}
+	@echo "Prepare config for busybox binary"
 	@rm -rf $(bb_gen)/full
 	@rm -f $(shell find $(abspath $(call intermediates-dir-for,EXECUTABLES,busybox)) -name "*.o")
 	@mkdir -p $(@D)
@@ -59,7 +61,7 @@ $(busybox_prepare_full): $(BB_PATH)/busybox-full.config
 
 busybox_prepare_minimal := $(bb_gen)/minimal/.config
 $(busybox_prepare_minimal): $(BB_PATH)/busybox-minimal.config
-	@echo -e ${CL_YLW}"Prepare config for libbusybox"${CL_RST}
+	@echo "Prepare config for libbusybox"
 	@rm -rf $(bb_gen)/minimal
 	@rm -f $(shell find $(abspath $(call intermediates-dir-for,STATIC_LIBRARIES,libbusybox)) -name "*.o")
 	@mkdir -p $(@D)
@@ -110,7 +112,6 @@ BUSYBOX_CFLAGS = \
 	-DANDROID \
 	-fno-strict-aliasing \
 	-fno-builtin-stpcpy \
-	$(BUSYBOX_WARNING_HIDE) \
 	-include $(bb_gen)/$(BUSYBOX_CONFIG)/include/autoconf.h \
 	-D'CONFIG_DEFAULT_MODULES_DIR="$(KERNEL_MODULES_DIR)"' \
 	-D'BB_VER="$(strip $(shell $(SUBMAKE) kernelversion)) $(BUSYBOX_SUFFIX)"' -DBB_BT=AUTOCONF_TIMESTAMP
@@ -133,7 +134,7 @@ BUSYBOX_CONFIG:=minimal
 BUSYBOX_SUFFIX:=static
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
 LOCAL_C_INCLUDES := $(bb_gen)/minimal/include $(BUSYBOX_C_INCLUDES)
-LOCAL_CFLAGS := -Dmain=busybox_driver $(BUSYBOX_CFLAGS)
+LOCAL_CFLAGS := -Dmain=busybox_driver $(BUSYBOX_CFLAGS) $(BUSYBOX_WARNING_HIDE)
 LOCAL_CFLAGS += \
   -DRECOVERY_VERSION \
   -Dgetusershell=busybox_getusershell \
@@ -147,6 +148,7 @@ LOCAL_MODULE := libbusybox
 LOCAL_MODULE_TAGS := eng debug
 LOCAL_STATIC_LIBRARIES := libcutils libc libm libselinux
 LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_minimal)
+LOCAL_CLANG := false
 include $(BUILD_STATIC_LIBRARY)
 
 
@@ -159,7 +161,7 @@ BUSYBOX_CONFIG:=full
 BUSYBOX_SUFFIX:=bionic
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
 LOCAL_C_INCLUDES := $(bb_gen)/full/include $(BUSYBOX_C_INCLUDES)
-LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
+LOCAL_CFLAGS := $(BUSYBOX_CFLAGS) $(BUSYBOX_WARNING_HIDE)
 LOCAL_ASFLAGS := $(BUSYBOX_AFLAGS)
 LOCAL_MODULE := busybox
 LOCAL_MODULE_TAGS := eng debug
@@ -176,7 +178,7 @@ exclude := nc
 SYMLINKS := $(addprefix $(TARGET_OUT_OPTIONAL_EXECUTABLES)/,$(filter-out $(exclude),$(notdir $(BUSYBOX_LINKS))))
 $(SYMLINKS): BUSYBOX_BINARY := $(LOCAL_MODULE)
 $(SYMLINKS): $(LOCAL_INSTALLED_MODULE)
-	@echo -e ${CL_CYN}"Symlink:"${CL_RST}" $@ -> $(BUSYBOX_BINARY)"
+	@echo "Symlink: $@ -> $(BUSYBOX_BINARY)"
 	@mkdir -p $(dir $@)
 	@rm -rf $@
 	$(hide) ln -sf $(BUSYBOX_BINARY) $@
@@ -198,7 +200,7 @@ BUSYBOX_CONFIG:=full
 BUSYBOX_SUFFIX:=static
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
 LOCAL_C_INCLUDES := $(bb_gen)/full/include $(BUSYBOX_C_INCLUDES)
-LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
+LOCAL_CFLAGS := $(BUSYBOX_CFLAGS) $(BUSYBOX_WARNING_HIDE)
 LOCAL_CFLAGS += \
   -Dgetusershell=busybox_getusershell \
   -Dsetusershell=busybox_setusershell \
@@ -215,8 +217,8 @@ LOCAL_STATIC_LIBRARIES := libclearsilverregex libc libcutils libm libuclibcrpc l
 LOCAL_MODULE_CLASS := UTILITY_EXECUTABLES
 LOCAL_MODULE_PATH := $(PRODUCT_OUT)/utilities
 LOCAL_UNSTRIPPED_PATH := $(PRODUCT_OUT)/symbols/utilities
+LOCAL_CLANG := false
 $(LOCAL_MODULE): busybox_prepare
 LOCAL_PACK_MODULE_RELOCATIONS := false
 LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_full)
-LOCAL_CLANG := false
 include $(BUILD_EXECUTABLE)

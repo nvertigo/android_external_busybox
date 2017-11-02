@@ -86,11 +86,3 @@ char *hasmntopt(const struct mntent *mnt, const char *opt)
 			 (o[l] != 0 && o[l] != ',' && o[l] != '=')));
 	return o;
 }
-
-/* declared in grp.h, but not necessary */
-#if !ENABLE_USE_BB_PWD_GRP
-
-void setgrent() {}
-void endgrent() {}
-#endif
-
