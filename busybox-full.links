@@ -11,9 +11,6 @@
 /sbin/blkid
 /sbin/blockdev
 /sbin/brctl
-/bin/bunzip2
-/bin/bzcat
-/bin/bzip2
 /bin/cal
 /bin/cat
 /bin/catv
@@ -76,8 +73,6 @@
 /bin/getsebool
 /bin/grep
 /bin/groups
-/bin/gunzip
-/bin/gzip
 /sbin/halt
 /bin/head
 /bin/hexdump
@@ -105,7 +100,6 @@
 /sbin/lsmod
 /bin/lspci
 /bin/lsusb
-/bin/lzcat
 /bin/lzma
 /bin/lzop
 /bin/lzopcat
@@ -230,7 +224,6 @@
 /bin/unlzma
 /bin/unlzop
 /bin/unxz
-/bin/unzip
 /bin/uptime
 /bin/usleep
 /bin/uudecode
@@ -238,11 +231,8 @@
 /bin/vi
 /bin/watch
 /bin/wc
-/bin/wget
 /bin/which
 /bin/whoami
 /bin/xargs
 /bin/xz
-/bin/xzcat
 /bin/yes
-/bin/zcat
