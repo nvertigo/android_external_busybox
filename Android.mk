@@ -7,7 +7,7 @@ BB_PATH := $(LOCAL_PATH)
 BIONIC_ICS := false
 BIONIC_L := true
 
-BUSYBOX_WARNING_HIDE := -Wno-error=implicit-function-declaration -Wno-implicit-function-declaration -Wno-implicit-fallthrough \
+BUSYBOX_WARNING_HIDE := -Wno-implicit-fallthrough \
 			-Wno-sign-compare -Wno-format-overflow -Wno-shift-negative-value -Wno-logical-not-parentheses \
 			-Wno-pointer-arith -Wno-return-type -Wno-error=format-security -Wno-format-truncation -Wno-uninitialized \
 			-Wno-maybe-uninitialized -Wno-format-security -Wno-discarded-qualifiers -Wno-type-limits \

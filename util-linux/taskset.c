@@ -48,6 +48,10 @@
  * -c/--cpu-list  (specify CPUs via "1,3,5-7")
  */
 
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE 1
+#endif
+
 #include <sched.h>
 #include "libbb.h"
 
