@@ -216,10 +216,9 @@ LOCAL_MODULE_STEM := busybox
 LOCAL_MODULE_TAGS := optional
 LOCAL_STATIC_LIBRARIES := libclearsilverregex libc libcutils libm libuclibcrpc libselinux
 LOCAL_MODULE_CLASS := UTILITY_EXECUTABLES
-LOCAL_MODULE_PATH := $(PRODUCT_OUT)/utilities
+LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
 LOCAL_UNSTRIPPED_PATH := $(PRODUCT_OUT)/symbols/utilities
 LOCAL_CLANG := false
-$(LOCAL_MODULE): busybox_prepare
 LOCAL_PACK_MODULE_RELOCATIONS := false
 LOCAL_ADDITIONAL_DEPENDENCIES := $(busybox_prepare_full)
 include $(BUILD_EXECUTABLE)
